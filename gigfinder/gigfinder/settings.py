@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+if os.name == 'nt':
+    OSGEO4W = r"C:\Users\user\PycharmProjects\django\venv\Lib\site-packages\osgeo"
+    assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
+    os.environ['OSGEO4W_ROOT'] = OSGEO4W
+    os.environ['GDAL_DATA'] = OSGEO4W + r"\data\gdal"
+    os.environ['PROJ_LIB'] = OSGEO4W + r"\data\proj"
+GDAL_LIBRARY_PATH = r"C:\Users\user\PycharmProjects\django\venv\Lib\site-packages\osgeo\gdal204.dll"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
+    'gigs',
 ]
 
 MIDDLEWARE = [
@@ -75,8 +84,10 @@ WSGI_APPLICATION = 'gigfinder.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'gigfinder',
+        'USER': 'jayanwana',
+        'PASSWORD': 'coolart47',
     }
 }
 
