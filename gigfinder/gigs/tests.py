@@ -1,8 +1,12 @@
 from django.test import TestCase
 # Create your tests here.
-from gigs.models import Venue
+from gigs.models import Venue, Event
+from gigs.views import LookupView
 from factory.fuzzy import BaseFuzzyAttribute
 from django.contrib.gis.geos import Point
+from django.utils import timezone
+from django.test import RequestFactory
+from django.urls import reverse
 import factory.django
 import random
 
@@ -25,6 +29,19 @@ class VenueFactory(factory.django.DjangoModelFactory):
     location = FuzzyPoint()
 
 
+class EventFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Event
+        django_get_or_create = (
+            'name',
+            'venue',
+            'datetime'
+        )
+    name = 'Queens of the Stone Age'
+    datetime = timezone.now()
+
+
+# Test
 class VenueTest(TestCase):
     def test_create_venue(self):
         # Create the venue
@@ -36,3 +53,37 @@ class VenueTest(TestCase):
         self.assertEqual(only_venue, venue)
         # Check attributes
         self.assertEqual(only_venue.name, 'Wembley Arena')
+        # Check string representation
+        self.assertEqual(only_venue.__str__(), 'Wembley Arena')
+
+
+class EventTest(TestCase):
+    def test_create_event(self):
+        # Create the venue
+        venue = VenueFactory()
+        # Create the event
+        event = EventFactory(venue=venue)
+        # Check we can find it
+        all_events = Event.objects.all()
+        self.assertEqual(len(all_events), 1)
+        only_event = all_events[0]
+        self.assertEqual(only_event, event)
+        # Check attributes
+        self.assertEqual(only_event.name, 'Queens of the Stone Age')
+        self.assertEqual(only_event.venue.name, 'Wembley Arena')
+        # Check string representation
+        self.assertEqual(only_event.__str__(), 'Queens of the Stone Age - Wembley Arena')
+
+
+class LookupViewTest(TestCase):
+    """
+    Test Lookup View
+    """
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_get(self):
+        request = self.factory.get(reverse('gigs:lookup'))
+        response = LookupView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('gigs/lookup.html')
