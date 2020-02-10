@@ -11,13 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-if os.name == 'nt':
-    OSGEO4W = r"C:\Users\user\PycharmProjects\django\venv\Lib\site-packages\osgeo"
-    assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
-    os.environ['OSGEO4W_ROOT'] = OSGEO4W
-    os.environ['GDAL_DATA'] = OSGEO4W + r"\data\gdal"
-    os.environ['PROJ_LIB'] = OSGEO4W + r"\data\proj"
-GDAL_LIBRARY_PATH = r"C:\Users\user\PycharmProjects\django\venv\Lib\site-packages\osgeo\gdal204.dll"
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,7 +21,8 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!c^blydb=jk8kb+=mjzg709-ak_3qu0v#)l+av2l19_v7j1l^j'
+SECRET_KEY = config("SECRET_KEY")
+GDAL_LIBRARY_PATH = config("GDAL_LIBRARY_PATH")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -88,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'gigfinder',
         'USER': 'jayanwana',
-        'PASSWORD': 'coolart47',
+        'PASSWORD': config('PASSWORD'),
     }
 }
 
