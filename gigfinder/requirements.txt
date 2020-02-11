@@ -1,4 +1,4 @@
-Django==3.0
+Django==3.0.3
 django-floppyforms==1.8.0
 django-widget-tweaks==1.4.5
 factory-boy==2.12.0
